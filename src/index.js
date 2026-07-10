@@ -135,8 +135,23 @@ async function playRaceEngine(charactere1, charactere2) {
     }
 }
 
+async function declareWinner(charactere1, charactere2) {
+    console.log("Resultado Final: \n")
+    console.log(`${charactere1.NOME}: ${charactere1.PONTOS} ponto(s)`);
+    console.log(`${charactere2.NOME}: ${charactere2.PONTOS} ponto(s)`);
+
+    if(charactere1.PONTOS > charactere2.PONTOS) {
+        console.log(`\n🏆 Parabéns, ${charactere1.NOME} venceu a corrida!`);
+    }else if(charactere2.PONTOS > charactere1.PONTOS) {
+        console.log(`\n🏆 Parabéns, ${charactere2.NOME} venceu a corrida!`);
+    }else{
+        console.log(`\n🤝 A corrida terminou empatada!`);
+    }
+}
+
 (async function main() {
     console.log(`🚨 Corrida entre ${player1.NOME} e ${player2.NOME} começando...`);
 
     await playRaceEngine(player1, player2);
+    await declareWinner(player1, player2);
 })(); //função auto-invocada
