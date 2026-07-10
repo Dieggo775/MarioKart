@@ -37,9 +37,7 @@ async function getRandomBlock() {
 
 async function logRollResult(characterName, block, diceResult, attribute) {
 
-        console.log(`${characterName} 🎲 rolou um dado de ${block} ${diceResult} + ${attribute} = ${diceResult + attribute} `)
-        //console.log(`${player2.NOME} 🎲 rolou um dado de ${block} ${diceResult2}`)
-
+        console.log(`${characterName} 🎲 rolou um dado de ${block} ${diceResult} + ${attribute} = ${diceResult + attribute}`)
 }
 
 async function playRaceEngine(charactere1, charactere2) {
@@ -74,7 +72,6 @@ async function playRaceEngine(charactere1, charactere2) {
                 diceResult2,
                 charactere2.VELOCIDADE
             );
-
         }
         if (block === "CURVA") {
             totalTestSkill1 = diceResult1 + charactere1.MANOBRABILIDADE;
@@ -97,6 +94,8 @@ async function playRaceEngine(charactere1, charactere2) {
             totalTestSkill1 = diceResult1 + charactere1.PODER;
             totalTestSkill2 = diceResult2 + charactere2.PODER;
 
+            console.log(`${charactere1.NOME} 🗡  confrontou com ${charactere2.NOME}!`)
+
             await logRollResult(
                 charactere1.NOME,
                 "poder",
@@ -108,15 +107,36 @@ async function playRaceEngine(charactere1, charactere2) {
                 "poder",
                 diceResult2,
                 charactere2.PODER
-            );  
+            );
+
+            if (totalTestSkill1 > totalTestSkill2 && charactere2.PONTOS > 0) {
+                console.log(`${charactere1.NOME} venceu o confronto! ${charactere2.NOME} perdeu um ponto 💔 !`)
+                charactere2.PONTOS--;
+            }
+            if (totalTestSkill2 > totalTestSkill1 && charactere1.PONTOS > 0) {
+                console.log(`${charactere2.NOME} venceu o confronto! ${charactere1.NOME} perdeu um ponto 💔 !`)
+                charactere1.PONTOS--;
+            }
+
+            console.log(totalTestSkill2 === totalTestSkill1 ? "Empate no confronto! Ninguém perde ponto!" : "");
         }
-    }  
-}   
+
+        //verificando o vencedor
+        if(totalTestSkill1 > totalTestSkill2) {
+            console.log(`${charactere1.NOME} ✅ Marcou um ponto!`);
+            charactere1.PONTOS++;
+        }else if(totalTestSkill2 > totalTestSkill1) {
+            console.log(`${charactere2.NOME} ✅ Marcou um ponto!`);
+            charactere2.PONTOS++;
+        }
+
+        console.log("---------------------------------------------------------")
+
+    }
+}
 
 (async function main() {
-    console.log(`🚨 Corrida entre ${player1.NOME} e ${player2.NOME} começando...\n`);
+    console.log(`🚨 Corrida entre ${player1.NOME} e ${player2.NOME} começando...`);
 
     await playRaceEngine(player1, player2);
 })(); //função auto-invocada
-
-// main();
