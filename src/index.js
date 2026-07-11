@@ -1,157 +1,156 @@
-const player1 = {
-    NOME : "Mario",
-    VELOCIDADE : 4,
-    MANOBRABILIDADE : 3,
-    PODER : 3,
-    PONTOS : 0,
-}
+const players = [
+    {
+        NOME: "Mario",
+        VELOCIDADE: 4,
+        MANOBRABILIDADE: 3,
+        PODER: 3,
+        PONTOS: 0,
+    },
+    {
+        NOME: "Luigi",
+        VELOCIDADE: 3,
+        MANOBRABILIDADE: 4,
+        PODER: 4,
+        PONTOS: 0,
+    },
+    {
+        NOME: "Peach",
+        VELOCIDADE: 3,
+        MANOBRABILIDADE: 4,
+        PODER: 2,
+        PONTOS: 0,
+    },
+    {
+        NOME: "Yoshi",
+        VELOCIDADE: 2,
+        MANOBRABILIDADE: 4,
+        PODER: 3,
+        PONTOS: 0,
+    },
+    {
+        NOME: "Bowser",
+        VELOCIDADE: 5,
+        MANOBRABILIDADE: 2,
+        PODER: 5,
+        PONTOS: 0,
+    },
+    {
+        NOME: "Donkey Kong",
+        VELOCIDADE: 2,
+        MANOBRABILIDADE: 2,
+        PODER: 5,
+        PONTOS: 0,
+    },
+]
 
-const player2 = {
-    NOME : "Luigi",
-    VELOCIDADE : 3,
-    MANOBRABILIDADE : 4,
-    PODER : 4,
-    PONTOS : 0,
-}
+const ROUNDS = 5;
 
-async function rollDice() {
+const BLOCK_ATTRIBUTE = {
+    RETA: "VELOCIDADE",
+    CURVA: "MANOBRABILIDADE",
+    CONFRONTO: "PODER",
+};
+
+function rollDice() {
     return Math.floor(Math.random() * 6) + 1;
 }
 
-async function getRandomBlock() {
-        let random = Math.random()
-        let result
+function getRandomBlock() {
+    const random = Math.random();
 
-        switch (true) {
-            case random < 0.33:
-                result = "RETA"
-                break;
-            case random < 0.66:
-                result = "CURVA"
-                break;
-            default:
-                result = "CONFRONTO";
+    if (random < 0.33) {
+        return "RETA";
+    } else if (random < 0.66) {
+        return "CURVA";
+    } else {
+        return "CONFRONTO";
     }
-    return result;
 }
 
-async function logRollResult(characterName, block, diceResult, attribute) {
-
-        console.log(`${characterName} 🎲 rolou um dado de ${block} ${diceResult} + ${attribute} = ${diceResult + attribute}`)
+function logRollResult(characterName, block, diceResult, attribute) {
+    console.log(`${characterName} 🎲 rolou um dado de ${block} ${diceResult} + ${attribute} = ${diceResult + attribute}`);
 }
 
-async function playRaceEngine(charactere1, charactere2) {
-    for(let round = 1; round <= 5; round++) {
-        console.log(`🏁 Rodada ${round}`)
+function selectRandomPlayers(count) {
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+}
 
-        //sortear bloco
-        let block = await getRandomBlock();
+function playRaceEngine(character1, character2) {
+    for (let round = 1; round <= ROUNDS; round++) {
+        console.log(`🏁 Rodada ${round}`);
+
+        const block = getRandomBlock();
         console.log(`Bloco sorteado: ${block}`);
-        
-            //rolar os dados
-        let diceResult1 = await rollDice();
-        let diceResult2 = await rollDice();
 
-        //teste de habilidade
-        let totalTestSkill1 = 0;
-        let totalTestSkill2 = 0;
+        const diceResult1 = rollDice();
+        const diceResult2 = rollDice();
 
-        if (block === "RETA") {
-            totalTestSkill1 = diceResult1 + charactere1.VELOCIDADE;
-            totalTestSkill2 = diceResult2 + charactere2.VELOCIDADE;
+        const attribute = BLOCK_ATTRIBUTE[block];
+        const totalTestSkill1 = diceResult1 + character1[attribute];
+        const totalTestSkill2 = diceResult2 + character2[attribute];
 
-            await logRollResult(
-                charactere1.NOME,
-                "velocidade",
-                diceResult1,
-                charactere1.VELOCIDADE
-            );
-            await logRollResult(
-                charactere2.NOME,
-                "velocidade",
-                diceResult2,
-                charactere2.VELOCIDADE
-            );
-        }
-        if (block === "CURVA") {
-            totalTestSkill1 = diceResult1 + charactere1.MANOBRABILIDADE;
-            totalTestSkill2 = diceResult2 + charactere2.MANOBRABILIDADE;
-
-            await logRollResult(
-                charactere1.NOME,
-                "manobralidade",
-                diceResult1,
-                charactere1.MANOBRABILIDADE
-            );
-            await logRollResult(
-                charactere2.NOME,
-                "manobralidade",
-                diceResult2,
-                charactere2.MANOBRABILIDADE
-            );
-        }
         if (block === "CONFRONTO") {
-            totalTestSkill1 = diceResult1 + charactere1.PODER;
-            totalTestSkill2 = diceResult2 + charactere2.PODER;
-
-            console.log(`${charactere1.NOME} 🗡  confrontou com ${charactere2.NOME}!`)
-
-            await logRollResult(
-                charactere1.NOME,
-                "poder",
-                diceResult1,
-                charactere1.PODER
-            );
-            await logRollResult(
-                charactere2.NOME,
-                "poder",
-                diceResult2,
-                charactere2.PODER
-            );
-
-            if (totalTestSkill1 > totalTestSkill2 && charactere2.PONTOS > 0) {
-                console.log(`${charactere1.NOME} venceu o confronto! ${charactere2.NOME} perdeu um ponto 💔 !`)
-                charactere2.PONTOS--;
-            }
-            if (totalTestSkill2 > totalTestSkill1 && charactere1.PONTOS > 0) {
-                console.log(`${charactere2.NOME} venceu o confronto! ${charactere1.NOME} perdeu um ponto 💔 !`)
-                charactere1.PONTOS--;
-            }
-
-            console.log(totalTestSkill2 === totalTestSkill1 ? "Empate no confronto! Ninguém perde ponto!" : "");
+            console.log(`${character1.NOME} 🗡️ confrontou com ${character2.NOME}!`);
         }
 
-        //verificando o vencedor
-        if(totalTestSkill1 > totalTestSkill2) {
-            console.log(`${charactere1.NOME} ✅ Marcou um ponto!`);
-            charactere1.PONTOS++;
-        }else if(totalTestSkill2 > totalTestSkill1) {
-            console.log(`${charactere2.NOME} ✅ Marcou um ponto!`);
-            charactere2.PONTOS++;
+        logRollResult(character1.NOME, attribute.toLowerCase(), diceResult1, character1[attribute]);
+        logRollResult(character2.NOME, attribute.toLowerCase(), diceResult2, character2[attribute]);
+
+        if (block === "CONFRONTO") {
+            if (totalTestSkill1 === totalTestSkill2) {
+                console.log("Empate no confronto! Ninguém perde ponto!");
+            } else if (totalTestSkill1 > totalTestSkill2) {
+                console.log(`${character1.NOME} venceu o confronto!`);
+                if (character2.PONTOS > 0) {
+                    console.log(`${character2.NOME} perdeu um ponto 💔!`);
+                    character2.PONTOS--;
+                } else {
+                    console.log(`${character2.NOME} não tem pontos para perder.`);
+                }
+            } else {
+                console.log(`${character2.NOME} venceu o confronto!`);
+                if (character1.PONTOS > 0) {
+                    console.log(`${character1.NOME} perdeu um ponto 💔!`);
+                    character1.PONTOS--;
+                } else {
+                    console.log(`${character1.NOME} não tem pontos para perder.`);
+                }
+            }
+        } else {
+            if (totalTestSkill1 > totalTestSkill2) {
+                console.log(`${character1.NOME} ✅ Marcou um ponto!`);
+                character1.PONTOS++;
+            } else if (totalTestSkill2 > totalTestSkill1) {
+                console.log(`${character2.NOME} ✅ Marcou um ponto!`);
+                character2.PONTOS++;
+            }
         }
 
-        console.log("---------------------------------------------------------")
-
+        console.log("---------------------------------------------------------");
     }
 }
 
-async function declareWinner(charactere1, charactere2) {
-    console.log("Resultado Final: \n")
-    console.log(`${charactere1.NOME}: ${charactere1.PONTOS} ponto(s)`);
-    console.log(`${charactere2.NOME}: ${charactere2.PONTOS} ponto(s)`);
+function declareWinner(character1, character2) {
+    console.log("Resultado Final: \n");
+    console.log(`${character1.NOME}: ${character1.PONTOS} ponto(s)`);
+    console.log(`${character2.NOME}: ${character2.PONTOS} ponto(s)`);
 
-    if(charactere1.PONTOS > charactere2.PONTOS) {
-        console.log(`\n🏆 Parabéns, ${charactere1.NOME} venceu a corrida!`);
-    }else if(charactere2.PONTOS > charactere1.PONTOS) {
-        console.log(`\n🏆 Parabéns, ${charactere2.NOME} venceu a corrida!`);
-    }else{
+    if (character1.PONTOS > character2.PONTOS) {
+        console.log(`\n🏆 Parabéns, ${character1.NOME} venceu a corrida!`);
+    } else if (character2.PONTOS > character1.PONTOS) {
+        console.log(`\n🏆 Parabéns, ${character2.NOME} venceu a corrida!`);
+    } else {
         console.log(`\n🤝 A corrida terminou empatada!`);
     }
 }
 
-(async function main() {
-    console.log(`🚨 Corrida entre ${player1.NOME} e ${player2.NOME} começando...`);
+function main() {
+    const [player1, player2] = selectRandomPlayers(2);
+    console.log(`🚨 Corrida entre ${player1.NOME} e ${player2.NOME} começando...\n`);
 
-    await playRaceEngine(player1, player2);
-    await declareWinner(player1, player2);
-})(); //função auto-invocada
+    playRaceEngine(player1, player2);
+    declareWinner(player1, player2);
+}
+
+main();
